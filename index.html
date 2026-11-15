@@ -698,7 +698,8 @@
         document.body.appendChild(frame);
       }
       var f = document.createElement('form');
-      f.method = 'POST'; f.action = REC.host + '/'; f.target = 'ossRec'; f.style.display = 'none';
+      f.method = 'POST'; f.enctype = 'multipart/form-data';
+      f.action = REC.host + '/'; f.target = 'ossRec'; f.style.display = 'none';
       var fields = {
         key: name, policy: REC.policy, OSSAccessKeyId: REC.key,
         signature: REC.sig, success_action_status: '200', 'Content-Type': 'application/json'
