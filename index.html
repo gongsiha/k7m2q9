@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FBF7F1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="format-detection" content="telephone=no">
+<title>可以和我一起出来玩嘛？</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;margin:0}
+  body{
+    background:#EDE7E0;
+    color:#332B26;
+    font-family:"PingFang SC","HarmonyOS Sans SC","MiSans","Microsoft YaHei UI","Microsoft YaHei",
+      "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",system-ui,-apple-system,"Segoe UI",sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
+    -webkit-text-size-adjust:100%;
+  }
+  #app{
+    position:relative;width:100%;max-width:430px;height:100vh;height:100dvh;max-height:940px;
+    background:#FBF7F1;overflow:hidden;display:flex;flex-direction:column;
+    isolation:isolate;
+  }
+  @media (min-width:520px){
+    #app{border-radius:34px;height:min(940px,94dvh);
+      box-shadow:0 40px 90px rgba(96,74,58,.26),0 0 0 1px rgba(255,255,255,.6)}
+  }
+  /* ---------- background ---------- */
+  .bg{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .bg i{position:absolute;display:block;border-radius:50%;filter:blur(46px);opacity:.55}
+  .b1{width:320px;height:320px;left:-110px;top:-90px;background:#FFD9E0}
+  .b2{width:300px;height:300px;right:-130px;top:24%;background:#FFE7C4}
+  .b3{width:280px;height:280px;left:-90px;bottom:-70px;background:#E4EEDC}
+  .bg em{position:absolute;inset:0;opacity:.5;
+    background-image:radial-gradient(#EFE1D4 1px,transparent 1px);
+    background-size:22px 22px;
+    -webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000,transparent 78%);
+    mask-image:radial-gradient(ellipse at 50% 30%,#000,transparent 78%);}
+  #fx{position:absolute;inset:0;z-index:30;pointer-events:none}
+
+  /* ---------- top bar ---------- */
+  .bar{position:absolute;z-index:20;left:0;right:0;top:0;display:flex;justify-content:space-between;
+    padding:calc(12px + env(safe-area-inset-top)) 14px 0}
+  .icon{width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.72);
+    color:#8C7F75;font-size:19px;line-height:1;display:grid;place-items:center;cursor:pointer;
+    box-shadow:0 4px 12px rgba(140,115,95,.12);transition:opacity .25s,transform .2s;
+    font-family:inherit;backdrop-filter:blur(6px)}
+  .icon:active{transform:scale(.92)}
+  .icon.hide{opacity:0;pointer-events:none}
+
+  /* ---------- stage ---------- */
+  .stage{position:relative;z-index:10;flex:1;display:flex;flex-direction:column;overflow-y:auto;
+    -webkit-overflow-scrolling:touch;padding:calc(52px + env(safe-area-inset-top)) 0 4px;
+    scrollbar-width:none}
+  .stage::-webkit-scrollbar{display:none}
+  .screen{display:none;flex-direction:column;align-items:center;justify-content:center;
+    flex:1 0 auto;min-height:100%;padding:6px 22px 12px;text-align:center}
+  .screen.on{display:flex;animation:in .45s cubic-bezier(.2,.85,.25,1) both}
+  @keyframes in{from{opacity:0;transform:translateY(14px) scale(.99)}to{opacity:1;transform:none}}
+
+  /* ---------- avatar ---------- */
+  .hero{position:relative;display:grid;place-items:center;margin:2px 0 6px}
+  .avatar{width:clamp(116px,33vw,140px);aspect-ratio:1;border-radius:50%;overflow:hidden;background:#fff;
+    box-shadow:0 0 0 5px #fff,0 16px 32px rgba(146,116,90,.22);position:relative;z-index:2}
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .hero.small .avatar{width:clamp(86px,23vw,102px);
+    box-shadow:0 0 0 4px #fff,0 12px 24px rgba(146,116,90,.18)}
+  .hero.small .hb{font-size:13px}
+  .hb{position:absolute;font-size:15px;z-index:3;animation:float 3.6s ease-in-out infinite;
+    filter:drop-shadow(0 2px 3px rgba(120,80,60,.15))}
+  .hb.a{right:-6px;top:6px;animation-delay:-.4s}
+  .hb.b{right:-14px;top:44px;font-size:12px;animation-delay:-1.6s}
+  .hb.c{left:-8px;top:34px;font-size:12px;animation-delay:-2.4s}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-7px) rotate(5deg)}}
+
+  /* ---------- type ---------- */
+  .title{margin:20px 0 0;font-size:clamp(22px,6.2vw,26px);line-height:1.4;font-weight:700;color:#2E2723;
+    letter-spacing:.01em;text-wrap:balance;max-width:19em}
+  .title .em{font-weight:400;font-size:.82em;margin-left:2px;vertical-align:.06em}
+  .sub{margin:14px 0 0;font-size:14.5px;line-height:2.05;color:#9A8E84;font-weight:400;text-wrap:balance;max-width:22em}
+  .sub b{color:#7A6C62;font-weight:500}
+
+  /* ---------- buttons ---------- */
+  .btns{position:relative;width:100%;max-width:318px;min-height:98px;margin:28px auto 0;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px}
+  .btn{border:0;font-family:inherit;cursor:pointer;touch-action:manipulation}
+  .primary{position:relative;width:100%;height:56px;border-radius:999px;color:#fff;font-size:17px;font-weight:600;
+    letter-spacing:.03em;background:linear-gradient(135deg,#FFA0B7 0%,#F76D91 55%,#F05C85 100%);
+    box-shadow:0 12px 24px -6px rgba(240,100,140,.5),inset 0 1px 0 rgba(255,255,255,.42);
+    transition:transform .16s ease,box-shadow .2s ease,opacity .2s}
+  .primary:active{transform:scale(.975);box-shadow:0 6px 14px -6px rgba(240,100,140,.5)}
+  .primary[disabled]{background:#F1EAE3;color:#B3A69C;box-shadow:none;cursor:default;transform:none}
+  .title .em,.sub .em{font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
+  .primary .sp{font-size:.92em;margin-left:4px}
+  .plain{background:transparent;color:#B5A89E;font-size:13.5px;padding:9px 16px;border-radius:999px;
+    transition:transform .42s cubic-bezier(.34,1.45,.64,1),color .2s,opacity .2s}
+  .plain:active{color:#8C7F75}
+
+  /* ---------- choice chips ---------- */
+  .picks{width:100%;max-width:352px;margin:22px auto 0;text-align:left}
+  .plabel{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#6E6158;
+    margin:0 0 10px;letter-spacing:.02em}
+  .plabel .dot2{width:5px;height:5px;border-radius:50%;background:#F390A9}
+  .grid{display:grid;gap:9px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .chip{background:#fff;border:1px solid #F3EAE1;border-radius:16px;padding:11px 6px;cursor:pointer;
+    font-family:inherit;color:#4A4038;box-shadow:0 4px 12px rgba(150,120,95,.06);
+    transition:transform .16s,box-shadow .2s,border-color .2s,background .2s;display:block;width:100%;text-align:center}
+  .chip .m{display:block;font-size:14px;font-weight:600;line-height:1.3;white-space:nowrap}
+  .chip .s{display:block;font-size:11px;color:#B3A69C;margin-top:3px;white-space:nowrap}
+  .chip:active{transform:scale(.96)}
+  .chip.on{border-color:#F58FAB;background:linear-gradient(180deg,#FFF6F8,#FFEDF1);
+    box-shadow:0 8px 18px -6px rgba(240,110,145,.42),inset 0 0 0 1px rgba(245,143,171,.4)}
+  .chip.on .m{color:#DE577C}
+  .chip.on .s{color:#E58AA1}
+  .chip.tall{padding:13px 8px}
+  .chip.tall .m{font-size:13.5px}
+  .food{padding:15px 6px 12px;border-radius:18px}
+  .food .e{display:block;font-size:25px;line-height:1;margin-bottom:8px;transition:transform .2s}
+  .food.on .e{transform:scale(1.12) rotate(-4deg)}
+  .food .m{font-size:13px}
+  .picks .more{margin-top:10px;font-size:11.5px;color:#C0B4AA;text-align:center;letter-spacing:.02em}
+
+  /* ---------- invitation card ---------- */
+  .card{position:relative;width:100%;max-width:346px;margin:22px auto 0;padding:20px 18px 14px;
+    border-radius:26px;background:linear-gradient(180deg,#FFFFFF,#FFFCF7);
+    box-shadow:0 22px 44px -18px rgba(150,118,92,.5),0 0 0 1px rgba(242,232,222,.9);overflow:hidden}
+  .card:before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(circle at 8% 10%,rgba(255,196,210,.3),transparent 40%),
+               radial-gradient(circle at 94% 92%,rgba(255,224,160,.26),transparent 42%)}
+  .card>*{position:relative;z-index:1}
+  .c-hd{text-align:center;padding:2px 0 12px}
+  .c-hd h3{margin:0;font-size:16.5px;font-weight:700;letter-spacing:.02em;color:#3B302A;display:flex;
+    align-items:center;justify-content:center;gap:6px}
+  .c-hd p{margin:3px 0 0;font-size:10.5px;letter-spacing:.22em;color:#C3B6AB;text-transform:uppercase}
+  .row{display:flex;align-items:center;gap:12px;padding:9px 2px;border-bottom:1px dashed #F2E7DD}
+  .row:last-of-type{border-bottom:0}
+  .ico{flex:0 0 auto;width:38px;height:38px;border-radius:13px;display:grid;place-items:center;font-size:17px;
+    background:#FDF0F2;box-shadow:inset 0 0 0 1px rgba(255,255,255,.8),0 4px 10px rgba(160,120,100,.08)}
+  .row:nth-of-type(2) .ico{background:#F3F0FE}
+  .row:nth-of-type(3) .ico{background:#FFF6E8}
+  .row:nth-of-type(4) .ico{background:#EDF6EC}
+  .k{font-size:10.5px;letter-spacing:.13em;color:#BCAFA4;text-transform:uppercase;line-height:1}
+  .v{font-size:15.5px;font-weight:600;color:#3B302A;margin-top:5px;line-height:1.25}
+  .c-ft{text-align:center;font-size:12.5px;color:#9E9187;padding:12px 0 3px;letter-spacing:.02em}
+
+  /* ---------- dots ---------- */
+  .dots{display:flex;gap:6px;justify-content:center;align-items:center;margin-top:24px;
+    padding-bottom:calc(4px + env(safe-area-inset-bottom))}
+  .screen[data-step="5"] .dots{margin-top:16px}
+  .screen[data-step="5"] .avatar{width:clamp(84px,22vw,96px);
+    box-shadow:0 0 0 4px #fff,0 12px 26px rgba(146,116,90,.2)}
+  .screen[data-step="5"] .title{margin-top:14px;font-size:clamp(21px,5.6vw,24px)}
+  .screen[data-step="5"] .sub{margin-top:9px;line-height:1.85}
+  .screen[data-step="5"] .card{margin-top:14px}
+  .screen[data-step="5"] .btns{margin-top:16px}
+  .dot{width:6px;height:6px;border-radius:99px;background:#E7DBD1;transition:all .35s cubic-bezier(.2,.8,.2,1)}
+  .dot.on{width:20px;background:linear-gradient(90deg,#FFA3B9,#F2658C)}
+
+  /* ---------- toast ---------- */
+  .toast{position:absolute;z-index:60;left:50%;bottom:76px;transform:translate(-50%,14px);
+    background:rgba(58,44,36,.9);color:#fff;font-size:13px;padding:10px 18px;border-radius:999px;
+    opacity:0;pointer-events:none;transition:all .3s ease;white-space:nowrap;max-width:86%;
+    backdrop-filter:blur(8px)}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  /* ---------- 地点二选一 ---------- */
+  .plans{width:100%;max-width:340px;margin:26px auto 0;display:flex;flex-direction:column;gap:12px}
+  .plan{display:flex;align-items:center;gap:12px;width:100%;padding:17px 20px;border-radius:20px;
+    border:1px solid #F3E9DF;background:#fff;font-family:inherit;font-size:16px;font-weight:600;color:#4A4038;
+    box-shadow:0 10px 22px -12px rgba(150,120,95,.55);cursor:pointer;text-align:left;
+    transition:transform .16s,border-color .2s,background .2s,box-shadow .2s}
+  .plan .pe{font-size:20px;line-height:1}
+  .plan:active{transform:scale(.975)}
+  .plan.on{border-color:#F58FAB;background:linear-gradient(180deg,#FFF6F8,#FFEDF1);color:#DE577C;
+    box-shadow:0 12px 24px -10px rgba(240,110,145,.5)}
+
+  /* ---------- 自定义时间 / 额外选项 ---------- */
+  .more-row{text-align:center;margin-top:2px}
+  .linkmore{display:inline-block;border:0;background:none;padding:6px 4px;font-family:inherit;
+    font-size:12.5px;color:#B98E9C;cursor:pointer;letter-spacing:.02em;transition:color .2s}
+  .linkmore u{text-decoration:none;border-bottom:1px dashed rgba(222,87,124,.35);padding-bottom:2px}
+  .linkmore.on{color:#DE577C;font-weight:600}
+  .linkmore.on u{border-bottom-color:rgba(222,87,124,.55)}
+  .chip.wide{grid-column:span 3;padding:14px 8px}
+  .chip.wide .m{font-size:13.5px}
+  .extras{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+  .chip.extra{display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 6px}
+  .chip.extra .e{font-size:15px;line-height:1;margin:0;transform:none}
+  .chip.extra .m{font-size:13px;white-space:nowrap}
+  .chip.extra.on .e{transform:none}
+  .ghost{position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<script id="app-config" type="application/json">
+{
+  "sender": "小金毛",
+  "avatar": "",
+  "title": "可以和我一起出来玩嘛？",
+  "lines": ["有一只小金毛", "它攒了好久的勇气", "想约你出来玩～汪！"],
+  "accept": "好呀",
+  "place": "",
+  "sign": "带好胃口，我带好"
+}
+</script>
+
+<div id="app">
+  <div class="bg" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><em></em></div>
+  <canvas id="fx" aria-hidden="true"></canvas>
+
+  <div class="bar">
+    <button class="icon hide" id="btnBack" aria-label="上一步">‹</button>
+  </div>
+
+  <div class="stage" id="stage">
+
+    <!-- 0 · 邀约 -->
+    <section class="screen on" data-step="0">
+      <div class="hero">
+        <div class="avatar"><img id="avaImg" alt="头像"></div>
+        <span class="hb a">❤️</span><span class="hb b">💛</span><span class="hb c">✨</span>
+      </div>
+      <h1 class="title" id="s0Title">可以和我一起出来玩嘛？<span class="em">💛</span></h1>
+      <p class="sub" id="s0Lines">有一只小金毛<br>它攒了好久的勇气<br>想约你出来玩～汪！</p>
+      <div class="btns">
+        <button class="btn primary" id="btnYes">好呀 <span class="sp">💛</span></button>
+        <button class="btn plain" id="btnNo">no thanks</button>
+      </div>
+      <div class="dots" data-dots aria-hidden="true"></div>
+    </section>
+
+    <!-- 1 · 确认 -->
+    <section class="screen" data-step="1">
+      <div class="hero">
+        <div class="avatar"><img class="ava-clone" alt=""></div>
+        <span class="hb a">❤️</span><span class="hb b">❤️</span><span class="hb c">💛</span>
+      </div>
+      <h1 class="title">等下，你真的愿意？！</h1>
+      <p class="sub">我都已经准备好被你拒绝了…<br>汪？！真的吗真的吗！<br>我好开心好开心好开心！<span class="em">💛</span></p>
+      <div class="btns">
+        <button class="btn primary" id="btnGo">好啦好啦，走吧 <span class="sp">→</span></button>
+      </div>
+      <div class="dots" data-dots aria-hidden="true"></div>
+    </section>
+
+    <!-- 2 · 时间 -->
+    <section class="screen" data-step="2">
+      <div class="hero small">
+        <div class="avatar mini-ava"><img class="ava-clone" alt=""></div>
+        <span class="hb a">💛</span>
+      </div>
+      <h1 class="title">所以…你什么时候有空？<span class="em">⏰</span></h1>
+      <div class="picks">
+        <div class="plabel"><span class="dot2"></span>选一天</div>
+        <div class="grid g4" id="dayGrid"></div>
+        <div class="more-row"><button class="linkmore" id="btnDateCustom" type="button"><u>其他日子，我自己选</u></button></div>
+        <div class="plabel" style="margin-top:14px"><span class="dot2"></span>几点见？</div>
+        <div class="grid g3" id="timeGrid"></div>
+      </div>
+      <input type="date" id="inpDate" class="ghost" aria-hidden="true" tabindex="-1">
+      <input type="time" id="inpTime" class="ghost" aria-hidden="true" tabindex="-1">
+      <div class="btns">
+        <button class="btn primary" id="btnTime" disabled>定时间 →</button>
+      </div>
+      <div class="dots" data-dots aria-hidden="true"></div>
+    </section>
+
+    <!-- 3 · 吃什么 -->
+    <section class="screen" data-step="3">
+      <div class="hero small">
+        <div class="avatar mini-ava"><img class="ava-clone" alt=""></div>
+        <span class="hb a">✨</span>
+      </div>
+      <h1 class="title">我们吃点什么？<span class="em">🍱</span></h1>
+      <p class="sub" style="margin-top:8px;font-size:13px">挑一个今天的氛围～</p>
+      <div class="picks" style="margin-top:16px">
+        <div class="grid g3" id="foodGrid"></div>
+        <div class="extras" id="extraGrid"></div>
+      </div>
+      <div class="btns">
+        <button class="btn primary" id="btnFood" disabled>选好了，走吧 →</button>
+      </div>
+      <div class="dots" data-dots aria-hidden="true"></div>
+    </section>
+
+    <!-- 4 · 谁定地方 -->
+    <section class="screen" data-step="4">
+      <div class="hero small">
+        <div class="avatar mini-ava"><img class="ava-clone" alt=""></div>
+        <span class="hb a">🗺️</span>
+      </div>
+      <h1 class="title">那去哪儿，谁说了算？<span class="em">🐾</span></h1>
+      <p class="sub" style="margin-top:8px;font-size:13px">选哪个，都是跟我走 🙈</p>
+      <div class="plans">
+        <button class="plan" data-plan="0">
+          <span class="pe">🐾</span>
+          <span class="pt">你别管了，我带你</span>
+        </button>
+        <button class="plan" data-plan="1">
+          <span class="pe">🙈</span>
+          <span class="pt">我不想管，你带着我</span>
+        </button>
+      </div>
+      <div class="dots" data-dots aria-hidden="true"></div>
+    </section>
+
+    <!-- 5 · 成啦 -->
+    <section class="screen" data-step="5">
+      <div class="hero">
+        <div class="avatar"><img class="ava-clone" alt=""></div>
+        <span class="hb a">💛</span><span class="hb b">❤️</span><span class="hb c">✨</span>
+      </div>
+      <h1 class="title">💛 好耶！说好啦！</h1>
+      <p class="sub">真开心你没有拒绝～<br>我会准时来接你的！汪！</p>
+      <div class="card">
+        <div class="c-hd">
+          <h3>🐕 出来玩邀请函</h3>
+          <p>Let's Hang Out</p>
+        </div>
+        <div class="row"><div class="ico">📅</div><div><div class="k">Date</div><div class="v" id="cDate">—</div></div></div>
+        <div class="row"><div class="ico">⏰</div><div><div class="k">Time</div><div class="v" id="cTime">—</div></div></div>
+        <div class="row"><div class="ico" id="cMenuIco">🍱</div><div><div class="k">Menu</div><div class="v" id="cMenu">—</div></div></div>
+        <div class="row" id="cPlanRow"><div class="ico">🐾</div><div><div class="k">Plan</div><div class="v" id="cPlan">—</div></div></div>
+        <div class="row" id="cPlaceRow" hidden><div class="ico">📍</div><div><div class="k">Place</div><div class="v" id="cPlace">—</div></div></div>
+        <div class="c-ft" id="cSign">带好胃口，我带好 💛</div>
+      </div>
+      <div class="btns" style="min-height:auto">
+        <button class="btn primary" id="btnShare">发给 TA <span class="sp">💌</span></button>
+        <button class="btn plain" id="btnAgain">改一下时间 / 吃的</button>
+      </div>
+      <div class="dots" data-dots aria-hidden="true"></div>
+    </section>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var DEFAULTS = {
+    sender: '小金毛',
+    avatar: '',
+    title: '可以和我一起出来玩嘛？',
+    lines: ['有一只小金毛', '它攒了好久的勇气', '想约你出来玩～汪！'],
+    accept: '好呀',
+    place: '',
+    sign: '带好胃口，我带好'
+  };
+
+  var CFG = Object.assign({}, DEFAULTS);
+  try {
+    Object.assign(CFG, JSON.parse(document.getElementById('app-config').textContent || '{}'));
+  } catch (e) {}
+
+  /* 默认头像：内置手绘金毛（无外部资源） */
+  var DOG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">'
+    + '<defs>'
+    + '<radialGradient id="bg" cx="50%" cy="32%" r="78%"><stop offset="0" stop-color="#F2F8EA"/><stop offset="1" stop-color="#D6E6C4"/></radialGradient>'
+    + '<linearGradient id="fur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FCD98F"/><stop offset="1" stop-color="#E2A44E"/></linearGradient>'
+    + '<linearGradient id="ear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8B167"/><stop offset="1" stop-color="#CB8C3C"/></linearGradient>'
+    + '</defs>'
+    + '<rect width="240" height="240" fill="url(#bg)"/>'
+    + '<ellipse cx="59" cy="132" rx="25" ry="44" fill="url(#ear)" transform="rotate(-11 59 132)"/>'
+    + '<ellipse cx="181" cy="132" rx="25" ry="44" fill="url(#ear)" transform="rotate(11 181 132)"/>'
+    + '<ellipse cx="120" cy="118" rx="67" ry="63" fill="url(#fur)"/>'
+    + '<ellipse cx="120" cy="147" rx="41" ry="31" fill="#FCEBCB"/>'
+    + '<ellipse cx="96" cy="106" rx="7.6" ry="8.8" fill="#3C2C21"/>'
+    + '<ellipse cx="144" cy="106" rx="7.6" ry="8.8" fill="#3C2C21"/>'
+    + '<circle cx="98.6" cy="102.6" r="2.7" fill="#fff" opacity=".92"/>'
+    + '<circle cx="146.6" cy="102.6" r="2.7" fill="#fff" opacity=".92"/>'
+    + '<ellipse cx="120" cy="132" rx="13" ry="9.6" fill="#4A3529"/>'
+    + '<ellipse cx="116" cy="129" rx="4" ry="2.4" fill="#6B5346" opacity=".8"/>'
+    + '<path d="M108 168c0-7 5.4-12 12-12s12 5 12 12c0 8.6-5.4 13.6-12 13.6S108 176.6 108 168z" fill="#F4879C"/>'
+    + '<path d="M120 141v7" stroke="#4A3529" stroke-width="3.4" stroke-linecap="round"/>'
+    + '<path d="M120 148c-5.6 8.4-15 9.4-20 2.6" stroke="#4A3529" stroke-width="3.4" fill="none" stroke-linecap="round"/>'
+    + '<path d="M120 148c5.6 8.4 15 9.4 20 2.6" stroke="#4A3529" stroke-width="3.4" fill="none" stroke-linecap="round"/>'
+    + '<path d="M72 166q48 20 96 0l-14 26q-34 16-68 0z" fill="#F79FB4"/>'
+    + '<circle cx="120" cy="188" r="5" fill="#fff" opacity=".85"/>'
+    + '<circle cx="104" cy="196" r="3" fill="#fff" opacity=".7"/>'
+    + '<circle cx="137" cy="196" r="3" fill="#fff" opacity=".7"/>'
+    + '</svg>';
+  var DOG_URI = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(DOG);
+
+  /* ---------- 元素 ---------- */
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var screens = $$('.screen');
+  var stage = $('#stage');
+  var dotSlots = $$('[data-dots]');
+  var toastEl = $('#toast');
+  var btnBack = $('#btnBack');
+
+  /* ---------- 日期 / 时间 / 吃的 ---------- */
+  var WK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  function addDays(n) { var d = new Date(today); d.setDate(d.getDate() + n); return d; }
+  function md(d) { return (d.getMonth() + 1) + '/' + d.getDate(); }
+  function satOffset() { var o = (6 - today.getDay() + 7) % 7; return o; }
+
+  var DAYS = [
+    { key: 'today', label: '今天', date: today, sub: md(today) + ' ' + WK[today.getDay()] },
+    { key: 'tomorrow', label: '明天', date: addDays(1), sub: md(addDays(1)) + ' ' + WK[(today.getDay() + 1) % 7] },
+    { key: 'dayafter', label: '后天', date: addDays(2), sub: md(addDays(2)) + ' ' + WK[(today.getDay() + 2) % 7] },
+    { key: 'weekend', label: '周末', date: addDays(satOffset()), sub: md(addDays(satOffset())) + ' ' + WK[(today.getDay() + satOffset()) % 7] }
+  ];
+
+  var TIMES = ['上午 10:00', '中午 12:00', '下午 14:00', '下午茶 ☕', '晚上 18:00', '晚上 19:30'];
+  var FOODS = [
+    { e: '🍲', n: '火锅' }, { e: '🍕', n: '披萨' }, { e: '🍣', n: '寿司' },
+    { e: '🥩', n: '烤肉' }, { e: '🥟', n: '早茶' }, { e: '🍝', n: '拉面' },
+    { e: '🌶️', n: '麻辣烫' }, { e: '🦞', n: '小龙虾' }, { e: '🍢', n: '烧烤' }
+  ];
+  /* 不吃饭 / 再议 —— 单独一排，语义不一样 */
+  var EXTRAS = [
+    { e: '🌙', n: '不想吃晚饭' },
+    { e: '🤔', n: '到时候再说' }
+  ];
+
+  var PLANS = [
+    { e: '🐾', n: '你别管了，我带你' },
+    { e: '🙈', n: '我不想管，你带着我' }
+  ];
+
+  var state = { step: 0, day: null, time: null, choice: null, plan: null, result: null };
+  var hashHandled = false;
+
+  /* "20:15" -> "晚上 20:15" */
+  function fmtTime(v) {
+    var p = String(v).split(':'), h = parseInt(p[0], 10), m = p[1] || '00';
+    if (isNaN(h)) return String(v);
+    var pre = h < 6 ? '凌晨' : h < 11 ? '上午' : h < 13 ? '中午' : h < 18 ? '下午' : h < 23 ? '晚上' : '深夜';
+    return pre + ' ' + (h < 10 ? '0' + h : '' + h) + ':' + m;
+  }
+  function ymd(d) {
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+
+  /* ---------- 渲染选择项 ---------- */
+  function renderPicks() {
+    $('#dayGrid').innerHTML = DAYS.map(function (d) {
+      return '<button class="chip tall" data-day="' + d.key + '">'
+        + '<span class="m">' + d.label + '</span><span class="s">' + d.sub + '</span></button>';
+    }).join('');
+    $('#timeGrid').innerHTML = TIMES.map(function (t, i) {
+      return '<button class="chip" data-time="' + i + '"><span class="m">' + t + '</span></button>';
+    }).join('') + '<button class="chip wide" data-time-custom="1"><span class="m">自定义时间 ⏰</span></button>';
+    $('#foodGrid').innerHTML = FOODS.map(function (f, i) {
+      return '<button class="chip food" data-food="' + i + '"><span class="e">' + f.e + '</span>'
+        + '<span class="m">' + f.n + '</span></button>';
+    }).join('');
+    $('#extraGrid').innerHTML = EXTRAS.map(function (f, i) {
+      return '<button class="chip extra" data-extra="' + i + '"><span class="e">' + f.e + '</span>'
+        + '<span class="m">' + f.n + '</span></button>';
+    }).join('');
+  }
+
+  function syncPicks() {
+    $$('.chip[data-day]').forEach(function (b) {
+      b.classList.toggle('on', !!state.day && b.dataset.day === state.day.key);
+    });
+    var cd = !!(state.day && state.day.key === 'custom');
+    $('#btnDateCustom').classList.toggle('on', cd);
+    $('#btnDateCustom').innerHTML = cd
+      ? '<u>已选 ' + state.day.label + ' ' + state.day.sub + ' · 换一天</u>'
+      : '<u>其他日子，我自己选</u>';
+
+    var customTime = !!(state.time && state.time.i === 'custom');
+    $$('.chip[data-time]').forEach(function (b) {
+      b.classList.toggle('on', !!state.time && !customTime && b.dataset.time === String(state.time.i));
+    });
+    var wide = $('.chip[data-time-custom]');
+    wide.classList.toggle('on', customTime);
+    wide.querySelector('.m').textContent = customTime ? state.time.label + ' · 改一下' : '自定义时间 ⏰';
+
+    $$('.chip[data-food]').forEach(function (b) {
+      b.classList.toggle('on', !!state.choice && state.choice.kind === 'food' && b.dataset.food === String(state.choice.i));
+    });
+    $$('.chip[data-extra]').forEach(function (b) {
+      b.classList.toggle('on', !!state.choice && state.choice.kind === 'extra' && b.dataset.extra === String(state.choice.i));
+    });
+
+    $('#btnTime').disabled = !(state.day && state.time);
+    $('#btnFood').disabled = !state.choice;
+  }
+
+  /* ---------- 配置上妆 ---------- */
+  function paintConfig() {
+    var lines = (Array.isArray(CFG.lines) ? CFG.lines : String(CFG.lines || '').split('\n'))
+      .filter(function (s) { return String(s).trim() !== ''; });
+    $('#s0Title').innerHTML = esc(CFG.title || DEFAULTS.title) + '<span class="em">💛</span>';
+    $('#s0Lines').innerHTML = lines.map(esc).join('<br>');
+    $('#btnYes').innerHTML = esc(CFG.accept || '好呀') + ' <span class="sp">💛</span>';
+    $('#cSign').textContent = (CFG.sign || DEFAULTS.sign) + ' 💛';
+    if (state.result) $('#cPlaceRow').hidden = !state.result.place;
+
+    var src = CFG.avatar || DOG_URI;
+    $('#avaImg').src = src;
+    $$('.ava-clone').forEach(function (img) { img.src = src; });
+    document.title = (CFG.title || DEFAULTS.title).replace(/[?？]+$/, '') + '？';
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+
+  /* ---------- 步骤 ---------- */
+  function showStep(n, opts) {
+    state.step = n;
+    screens.forEach(function (s, i) {
+      var on = i === n;
+      s.classList.toggle('on', on);
+      if (on) { s.style.animation = 'none'; void s.offsetWidth; s.style.animation = ''; }
+    });
+    var dotHTML = screens.map(function (_, i) {
+      return '<span class="dot' + (i === n ? ' on' : '') + '"></span>';
+    }).join('');
+    dotSlots.forEach(function (box) { box.innerHTML = dotHTML; });
+    btnBack.classList.toggle('hide', n === 0);
+    stage.scrollTop = 0;
+    if (n === screens.length - 1) { burst(); confetti(); }
+    if (opts && opts.focus) { /* 预留 */ }
+  }
+
+  /* ---------- 交互 ---------- */
+  var dodges = 0;
+  var btnNo = $('#btnNo');
+  btnNo.addEventListener('click', function () {
+    if (dodges >= 3) { accept(); return; }
+    dodges++;
+    var wrap = btnNo.parentElement.getBoundingClientRect();
+    var b = btnNo.getBoundingClientRect();
+    var mx = Math.max(0, (wrap.width - b.width) / 2 - 6);
+    var my = Math.max(0, (wrap.height - b.height) / 2 - 6);
+    btnNo.style.transform = 'translate(' + ((Math.random() * 2 - 1) * mx).toFixed(0) + 'px,'
+      + ((Math.random() * 2 - 1) * my).toFixed(0) + 'px)';
+    if (dodges === 1) { btnNo.textContent = 'no, thanks'; toast('它害羞了，跑掉了～汪'); }
+    else if (dodges === 2) { btnNo.textContent = '真的不要？🥺'; }
+    else { btnNo.textContent = '好吧…我去 🙈'; toast('点它一下就行啦'); }
+  });
+
+  function accept() {
+    showStep(1);
+    burst();
+  }
+  $('#btnYes').addEventListener('click', accept);
+  $('#btnGo').addEventListener('click', function () { showStep(2); });
+
+  $('#dayGrid').addEventListener('click', function (e) {
+    var b = e.target.closest('.chip[data-day]');
+    if (!b) return;
+    state.day = DAYS.filter(function (d) { return d.key === b.dataset.day; })[0];
+    syncPicks();
+  });
+  $('#timeGrid').addEventListener('click', function (e) {
+    var w = e.target.closest('[data-time-custom]');
+    if (w) { openPicker($('#inpTime')); return; }
+    var b = e.target.closest('.chip[data-time]');
+    if (!b) return;
+    var i = Number(b.dataset.time);
+    state.time = { i: i, label: TIMES[i] };
+    syncPicks();
+  });
+  $('#foodGrid').addEventListener('click', function (e) {
+    var b = e.target.closest('.chip[data-food]');
+    if (!b) return;
+    var i = Number(b.dataset.food);
+    state.choice = { kind: 'food', i: i, e: FOODS[i].e, n: FOODS[i].n };
+    syncPicks();
+  });
+  $('#extraGrid').addEventListener('click', function (e) {
+    var b = e.target.closest('.chip[data-extra]');
+    if (!b) return;
+    var i = Number(b.dataset.extra);
+    state.choice = { kind: 'extra', i: i, e: EXTRAS[i].e, n: EXTRAS[i].n };
+    syncPicks();
+  });
+
+  /* 自选日子 / 自选时间 */
+  function openPicker(inp) {
+    if (!inp) return;
+    try { if (inp.showPicker) { inp.showPicker(); return; } } catch (e) {}
+    try { inp.focus(); inp.click(); } catch (e) {}
+  }
+  var inpDate = $('#inpDate'), inpTime = $('#inpTime');
+  inpDate.min = ymd(today);
+  $('#btnDateCustom').addEventListener('click', function () { openPicker(inpDate); });
+  inpDate.addEventListener('change', function () {
+    if (!this.value) return;
+    var p = this.value.split('-');
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    if (isNaN(d.getTime())) return;
+    state.day = { key: 'custom', label: WK[d.getDay()], sub: md(d), date: d };
+    syncPicks();
+  });
+  inpTime.addEventListener('change', function () {
+    if (!this.value) return;
+    state.time = { i: 'custom', label: fmtTime(this.value) };
+    syncPicks();
+  });
+
+  $('#btnTime').addEventListener('click', function () {
+    if (!state.day || !state.time) return;
+    showStep(3);
+  });
+  $('#btnFood').addEventListener('click', function () {
+    if (!state.choice) return;
+    showStep(4);
+  });
+  $$('.plan').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var i = Number(b.dataset.plan);
+      state.plan = { i: i, e: PLANS[i].e, n: PLANS[i].n };
+      $$('.plan').forEach(function (x) { x.classList.toggle('on', x === b); });
+      if (buildResult()) setTimeout(function () { showStep(5); }, 160);
+    });
+  });
+  $('#btnAgain').addEventListener('click', function () { showStep(2); });
+  btnBack.addEventListener('click', function () {
+    if (state.step === 0) return;
+    showStep(Math.max(0, state.step - 1));
+  });
+
+  function buildResult() {
+    var d = state.day, c = state.choice, pl = state.plan;
+    if (!d || !state.time || !c) return false;
+    state.result = {
+      date: d.label + ' · ' + d.sub,
+      time: state.time.label,
+      menu: c.e + ' ' + c.n,
+      menuName: c.n,
+      icon: c.e,
+      plan: pl ? pl.e + ' ' + pl.n : '',
+      planName: pl ? pl.n : '',
+      planIcon: pl ? pl.e : '🐾',
+      place: CFG.place || ''
+    };
+    $('#cDate').textContent = state.result.date;
+    $('#cTime').textContent = state.result.time;
+    $('#cMenu').textContent = state.result.menu;
+    $('#cMenuIco').textContent = c.e || '🍱';
+    $('#cPlan').textContent = state.result.plan;
+    $('#cPlanRow').hidden = !state.result.plan;
+    $('#cPlace').textContent = state.result.place;
+    $('#cPlaceRow').hidden = !state.result.place;
+    return true;
+  }
+
+  /* ---------- 复制 / 分享 ---------- */
+  function shareText() {
+    var r = state.result || {};
+    var arr = ['好耶！说好啦 🎉', ''];
+    if (r.date) arr.push('📅 ' + r.date);
+    if (r.time) arr.push('⏰ ' + r.time);
+    if (r.menuName) arr.push((r.icon || '🍱') + ' ' + r.menuName);
+    if (r.plan) arr.push('🐾 ' + r.planName);
+    if (r.place) arr.push('📍 ' + r.place);
+    arr.push('');
+    arr.push('—— ' + (CFG.sender || '我') + ' 发来的邀请 💛');
+    return arr.join('\n');
+  }
+
+  function resultLink() {
+    if (!state.result) return '';
+    try {
+      var p = { d: state.result.date, t: state.result.time, m: state.result.menu, p: state.result.place, pl: state.result.planName || '' };
+      var json = JSON.stringify(p);
+      var b64 = btoa(String.fromCharCode.apply(null, new TextEncoder().encode(json)))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      return location.origin + location.pathname + '#r=' + b64;
+    } catch (e) { return ''; }
+  }
+
+  $('#btnShare').addEventListener('click', function () {
+    var text = shareText();
+    var link = resultLink();
+    var full = link ? text + '\n' + link : text;
+    if (navigator.share) {
+      navigator.share({ title: '出来玩邀请函', text: full }).catch(function () { copy(full); });
+    } else {
+      copy(full);
+    }
+  });
+
+  function copy(text) {
+    var done = function () { toast('已复制，粘到聊天框发给 TA 就行 💌'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
+    } else { fallbackCopy(text, done); }
+  }
+  function fallbackCopy(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { toast('长按卡片截图也可以～'); }
+    document.body.removeChild(ta);
+  }
+
+  /* ---------- 分享回执：#r= ---------- */
+  (function readHash() {
+    var m = /#r=([^&]+)/.exec(location.hash || '');
+    if (!m) return;
+    try {
+      var b64 = m[1].replace(/-/g, '+').replace(/_/g, '/');
+      var json = new TextDecoder().decode(Uint8Array.from(atob(b64), function (c) { return c.charCodeAt(0); }));
+      var p = JSON.parse(json);
+      var matchDay = DAYS.filter(function (d) { return p.d && p.d.indexOf(d.label) === 0; })[0];
+      var timeIdx = TIMES.indexOf(p.t);
+      var pool = FOODS.map(function (f, i) { return { e: f.e, n: f.n, kind: 'food', i: i }; })
+        .concat(EXTRAS.map(function (f, i) { return { e: f.e, n: f.n, kind: 'extra', i: i }; }));
+      var matchChoice = pool.filter(function (f) { return p.m && p.m.indexOf(f.n) >= 0; })[0];
+      state.day = matchDay || { key: 'x', label: '', sub: '', date: today };
+      state.time = { i: timeIdx < 0 ? 0 : timeIdx, label: p.t };
+      state.choice = matchChoice || { kind: 'food', i: -1, e: '', n: p.m || '' };
+      state.result = {
+        date: p.d, time: p.t, menu: p.m,
+        menuName: (matchChoice && matchChoice.n) || p.m,
+        icon: (matchChoice && matchChoice.e) || '🍱',
+        plan: p.pl || '', planName: p.pl || '', planIcon: '🐾',
+        place: p.p || ''
+      };
+      $('#cDate').textContent = p.d;
+      $('#cTime').textContent = p.t;
+      $('#cMenu').textContent = p.m;
+      $('#cMenuIco').textContent = (matchChoice && matchChoice.e) || '🍱';
+      $('#cPlan').textContent = p.pl || '';
+      $('#cPlanRow').hidden = !p.pl;
+      $('#cPlace').textContent = p.p || '';
+      $('#cPlaceRow').hidden = !p.p;
+      hashHandled = true;
+      showStep(5);
+    } catch (e) {}
+  })();
+
+  /* ---------- 小爱心 ---------- */
+  var fx = $('#fx'), ctx = fx.getContext('2d'), parts = [], raf = null, dpr = 1;
+  function sizeFx() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var r = $('#app').getBoundingClientRect();
+    fx.width = r.width * dpr; fx.height = r.height * dpr;
+    fx.style.width = r.width + 'px'; fx.style.height = r.height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', sizeFx);
+
+  function burst() {
+    if (window.__noFx) return;
+    var r = $('#app').getBoundingClientRect();
+    for (var i = 0; i < 16; i++) {
+      var a = (Math.PI * 2 * i) / 16 + Math.random() * 0.4;
+      parts.push({
+        x: r.width / 2, y: r.height * 0.26,
+        vx: Math.cos(a) * (1.4 + Math.random() * 2.4),
+        vy: Math.sin(a) * (1.4 + Math.random() * 2.4) - 1.2,
+        life: 1, size: 10 + Math.random() * 8, rot: Math.random() * 6, vr: (Math.random() - .5) * .2,
+        g: 0.035, txt: ['💛', '❤️', '✨'][i % 3], kind: 'p'
+      });
+    }
+    loop();
+  }
+
+  function confetti() {
+    if (window.__noFx) return;
+    var r = $('#app').getBoundingClientRect();
+    var colors = ['#FFB3C4', '#FFD98E', '#F2658C', '#FFE3B8', '#F9A8D4'];
+    for (var i = 0; i < 60; i++) {
+      parts.push({
+        x: Math.random() * r.width, y: -20 - Math.random() * 160,
+        vx: (Math.random() - .5) * 1.2, vy: 1.6 + Math.random() * 2.6,
+        life: 1, size: 4 + Math.random() * 5, rot: Math.random() * 6, vr: (Math.random() - .5) * .3,
+        g: 0.008, color: colors[i % colors.length], kind: 'c'
+      });
+    }
+    loop();
+  }
+
+  function loop() {
+    if (raf) return;
+    var t0 = performance.now();
+    (function frame(now) {
+      var w = fx.width / dpr, h = fx.height / dpr;
+      ctx.clearRect(0, 0, w, h);
+      for (var i = parts.length - 1; i >= 0; i--) {
+        var p = parts[i];
+        p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+        if (p.kind === 'c' && p.y > h + 30) { parts.splice(i, 1); continue; }
+        if (p.kind === 'p') { p.life -= 0.012; if (p.life <= 0) { parts.splice(i, 1); continue; } }
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+        ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        if (p.kind === 'p') {
+          ctx.font = p.size * 1.6 + 'px serif';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(p.txt, 0, 0);
+        } else {
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size * 0.55);
+        }
+        ctx.restore();
+      }
+      if (parts.length) { raf = requestAnimationFrame(frame); }
+      else { raf = null; ctx.clearRect(0, 0, w, h); }
+    })(t0);
+  }
+
+  /* ---------- toast ---------- */
+  var tTimer;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(tTimer);
+    tTimer = setTimeout(function () { toastEl.classList.remove('on'); }, 2100);
+  }
+
+  /* ---------- 启动 ---------- */
+  sizeFx();
+  renderPicks();
+  paintConfig();
+
+  /* 深链：?step=2&d=2&t=4&f=2 直接预览某一步（也方便自己收藏某一步） */
+  (function deepLink() {
+    var q = new URLSearchParams(location.search);
+    if (q.get('fx') === '0') window.__noFx = true;
+    if (hashHandled) return;
+    if (q.has('d')) state.day = DAYS[Math.min(3, Math.max(0, parseInt(q.get('d'), 10) || 0))];
+    if (q.has('t')) { var ti = Math.min(5, Math.max(0, parseInt(q.get('t'), 10) || 0)); state.time = { i: ti, label: TIMES[ti] }; }
+    if (q.has('f')) { var fi = Math.min(8, Math.max(0, parseInt(q.get('f'), 10) || 0)); state.choice = { kind: 'food', i: fi, e: FOODS[fi].e, n: FOODS[fi].n }; }
+    if (q.get('x') === '0') state.choice = { kind: 'extra', i: 0, e: EXTRAS[0].e, n: EXTRAS[0].n };
+    if (q.get('x') === '1') state.choice = { kind: 'extra', i: 1, e: EXTRAS[1].e, n: EXTRAS[1].n };
+    if (q.has('pl')) { var pi = Math.min(1, Math.max(0, parseInt(q.get('pl'), 10) || 0)); state.plan = { i: pi, e: PLANS[pi].e, n: PLANS[pi].n }; }
+    syncPicks();
+    var n = q.has('step') ? Math.min(5, Math.max(0, parseInt(q.get('step'), 10) || 0)) : 0;
+    if (n === 5 && state.day && state.time && state.choice) buildResult();
+    showStep(n === 5 && !state.result ? 2 : n);
+  })();
+
+  /* iOS 地址栏回弹导致的 100dvh 抖动 */
+  function fixVh() {
+    document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');
+  }
+  fixVh();
+  window.addEventListener('resize', fixVh);
+})();
+</script>
+</body>
+</html>
+
