@@ -147,7 +147,6 @@
   .row:nth-of-type(4) .ico{background:#EDF6EC}
   .k{font-size:10.5px;letter-spacing:.13em;color:#BCAFA4;text-transform:uppercase;line-height:1}
   .v{font-size:15.5px;font-weight:600;color:#3B302A;margin-top:5px;line-height:1.25}
-  .c-ft{text-align:center;font-size:12.5px;color:#9E9187;padding:12px 0 3px;letter-spacing:.02em}
 
   /* ---------- dots ---------- */
   .dots{display:flex;gap:6px;justify-content:center;align-items:center;margin-top:24px;
@@ -212,8 +211,7 @@
   "title": "可以和我一起出来玩嘛？",
   "lines": ["有一只小猫", "想约你出来玩～喵！"],
   "accept": "好呀",
-  "place": "",
-  "sign": "带好胃口，我带好"
+  "place": ""
 }
 </script>
 
@@ -285,8 +283,7 @@
         <span class="hb a">✨</span>
       </div>
       <h1 class="title">我们吃点什么？<span class="em">🍱</span></h1>
-      <p class="sub" style="margin-top:8px;font-size:13px">挑一个今天的氛围～</p>
-      <div class="picks" style="margin-top:16px">
+      <div class="picks" style="margin-top:18px">
         <div class="grid g3" id="foodGrid"></div>
         <div class="extras" id="extraGrid"></div>
       </div>
@@ -303,7 +300,6 @@
         <span class="hb a">🗺️</span>
       </div>
       <h1 class="title">那去哪儿，谁说了算？<span class="em">🐾</span></h1>
-      <p class="sub" style="margin-top:8px;font-size:13px">选哪个，都是跟我走 🙈</p>
       <div class="plans">
         <button class="plan" data-plan="0">
           <span class="pe">🐾</span>
@@ -324,7 +320,7 @@
         <span class="hb a">💛</span><span class="hb b">❤️</span><span class="hb c">✨</span>
       </div>
       <h1 class="title">💛 好耶！说好啦！</h1>
-      <p class="sub">真开心你没有拒绝～<br>我会准时来接你的！喵！</p>
+      <p class="sub">真开心你没有拒绝～<br>我会准时到达的！喵！</p>
       <div class="card">
         <div class="c-hd">
           <h3>🐱 出来玩邀请函</h3>
@@ -335,7 +331,6 @@
         <div class="row"><div class="ico" id="cMenuIco">🍱</div><div><div class="k">Menu</div><div class="v" id="cMenu">—</div></div></div>
         <div class="row" id="cPlanRow"><div class="ico">🐾</div><div><div class="k">Plan</div><div class="v" id="cPlan">—</div></div></div>
         <div class="row" id="cPlaceRow" hidden><div class="ico">📍</div><div><div class="k">Place</div><div class="v" id="cPlace">—</div></div></div>
-        <div class="c-ft" id="cSign">带好胃口，我带好 💛</div>
       </div>
       <div class="btns" style="min-height:auto">
         <div class="ok-line">
@@ -362,8 +357,7 @@
     title: '可以和我一起出来玩嘛？',
     lines: ['有一只小猫', '想约你出来玩～喵！'],
     accept: '好呀',
-    place: '',
-    sign: '带好胃口，我带好'
+    place: ''
   };
 
   var CFG = Object.assign({}, DEFAULTS);
@@ -515,7 +509,6 @@
     $('#s0Title').innerHTML = esc(CFG.title || DEFAULTS.title) + '<span class="em">💛</span>';
     $('#s0Lines').innerHTML = lines.map(esc).join('<br>');
     $('#btnYes').innerHTML = esc(CFG.accept || '好呀') + ' <span class="sp">💛</span>';
-    $('#cSign').textContent = (CFG.sign || DEFAULTS.sign) + ' 💛';
     if (state.result) $('#cPlaceRow').hidden = !state.result.place;
 
     var src = CFG.avatar || CAT_URI;
