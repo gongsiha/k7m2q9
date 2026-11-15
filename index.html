@@ -690,16 +690,14 @@
       if (extra) for (var k in extra) { if (extra[k]) p[k] = extra[k]; }
 
       var name = 'inv/' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8) + '.json';
-      var frame = document.getElementById('ossRec');
-      if (!frame) {
-        frame = document.createElement('iframe');
-        frame.id = 'ossRec'; frame.name = 'ossRec';
-        frame.style.cssText = 'position:absolute;width:0;height:0;border:0;left:-9999px';
-        document.body.appendChild(frame);
-      }
+      var fname = 'ossRec' + Date.now() + Math.floor(Math.random() * 1000);
+      var frame = document.createElement('iframe');
+      frame.name = fname;
+      frame.style.cssText = 'position:absolute;width:0;height:0;border:0;left:-9999px';
+      document.body.appendChild(frame);
       var f = document.createElement('form');
       f.method = 'POST'; f.enctype = 'multipart/form-data';
-      f.action = REC.host + '/'; f.target = 'ossRec'; f.style.display = 'none';
+      f.action = REC.host + '/'; f.target = fname; f.style.display = 'none';
       var fields = {
         key: name, policy: REC.policy, OSSAccessKeyId: REC.key,
         signature: REC.sig, success_action_status: '200', 'Content-Type': 'application/json'
